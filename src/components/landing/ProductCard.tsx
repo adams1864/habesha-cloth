@@ -1,0 +1,39 @@
+"use client";
+
+import type { Product } from "@/data/products";
+import Image from "next/image";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+
+interface ProductCardProps {
+  product: Product;
+}
+
+export function ProductCard({ product }: ProductCardProps) {
+  const params = useParams();
+  const locale = params?.locale || "en";
+
+  return (
+    <Link
+      href={`/${locale}/product/${product.id}`}
+      className="group relative block"
+    >
+      <div className="aspect-[3/4] w-full overflow-hidden rounded-xl bg-gray-50">
+        <div className="relative h-full w-full">
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+      </div>
+      <div className="mt-2">
+        <h3 className="text-sm font-medium group-hover:text-[#d6001c] transition-colors">
+          {product.name}
+        </h3>
+        <p className="text-sm text-gray-600">ETB {product.price}</p>
+      </div>
+    </Link>
+  );
+}

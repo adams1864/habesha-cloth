@@ -1,0 +1,13 @@
+{
+  "Common": {
+    "hello": "Hello",
+    "clickHereOrDragImageToAdd": "Click here or drag an image to add",
+    "SelectFile": "Select file",
+    "clearValue": "Clear value",
+    "clearAll": "Clear all",
+    "search": "Search",
+    "clearSearch": "Clear search",
+    "nothingFound": "Nothing found",
+    "fieldRequired": "This field is required"
+  }
+}

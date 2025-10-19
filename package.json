@@ -1,0 +1,53 @@
+{
+  "name": "tem",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "biome check",
+    "format": "biome format --write"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@mantine/carousel": "^8.3.3",
+    "@mantine/colors-generator": "^8.3.3",
+    "@mantine/core": "^8.3.3",
+    "@mantine/dates": "^8.3.3",
+    "@mantine/dropzone": "^8.3.3",
+    "@mantine/hooks": "^8.3.3",
+    "@mantine/modals": "^8.3.3",
+    "@mantine/notifications": "^8.3.3",
+    "@tabler/icons-react": "^3.35.0",
+    "chroma-js": "^3.1.2",
+    "clsx": "^2.1.1",
+    "cn": "^0.1.1",
+    "consola": "^3.4.2",
+    "next": "15.5.4",
+    "next-intl": "^4.3.9",
+    "next-nprogress-bar": "^2.4.7",
+    "nuqs": "^2.7.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hook-form": "^7.64.0",
+    "react-use": "^17.6.0",
+    "tailwind-merge": "^3.3.1",
+    "use-debounce": "^10.0.6",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/chroma-js": "^3.1.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "postcss": "^8",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "packageManager": "pnpm@10.17.1+sha256.a1e0133f6801c13039ae41309e5e5a7d1058a3a1e1edd020a4944a83c5368d04"
+}

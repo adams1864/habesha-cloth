@@ -1,0 +1,13 @@
+{
+  "Common": {
+    "hello": "ሰላም",
+    "clickHereOrDragImageToAdd": "ምስል ለመጨመር እዚህ ጠቅ ያድርጉ ወይም ይጎትቱ",
+    "SelectFile": "ፋይል ይምረጡ",
+    "clearValue": "እሴት አጥፋ",
+    "clearAll": "ሁሉንም አጥፋ",
+    "search": "ፈልግ",
+    "clearSearch": "ፍለጋ አጥፋ",
+    "nothingFound": "ምንም አልተገኘም",
+    "fieldRequired": "ይህ መስክ አስፈላጊ ነው"
+  }
+}

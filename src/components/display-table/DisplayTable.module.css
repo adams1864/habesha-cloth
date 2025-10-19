@@ -1,0 +1,24 @@
+.tableWrapper {
+  @apply overflow-hidden rounded-md border   bg-primary-background;
+}
+.tableContainer {
+  @apply relative w-full overflow-auto;
+}
+.table {
+  @apply w-full caption-bottom text-sm;
+}
+.table thead {
+  @apply rounded-t-md border-b;
+}
+.table th {
+  @apply px-4 py-2 text-left;
+}
+.table tbody tr {
+  @apply border-b transition-colors odd:bg-gray-500   hover:bg-primary-background;
+}
+.table tbody tr:last-child {
+  @apply border-b-0;
+}
+.table td {
+  @apply px-4 py-2;
+}
