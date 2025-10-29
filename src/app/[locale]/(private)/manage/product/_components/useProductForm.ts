@@ -1,3 +1,4 @@
+import { createProduct } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
@@ -36,18 +37,33 @@ export function useProductForm({ product }: UseProductFormProps) {
     },
   });
 
+  
   const handleCreate = async (data: ProductFormData) => {
     setCreating(true);
     try {
-      console.log("Creating product:", data);
-      // TODO: Implement API call to create product
-      // You'll need to handle file uploads for coverImage and images here
+      const formData = new FormData();
+      formData.append("name", data.title.en);
+      formData.append("description", data.description.en);
+      formData.append("price", data.price.toString());
+      formData.append("stock", data.stock.toString());
+      formData.append("category", data.category);
+      formData.append("size", data.size);
+      formData.append("gender", data.gender);
+      data.color.forEach((color) => formData.append("color", color));
+      formData.append("status", data.status);
+
+      if (coverFile) {
+        formData.append("coverImage", coverFile);
+      }
+
+      await createProduct(formData);
     } catch (error) {
       console.error("Error creating product:", error);
     } finally {
       setCreating(false);
     }
   };
+
 
   const handleUpdate = async (data: ProductFormData) => {
     setUpdating(true);

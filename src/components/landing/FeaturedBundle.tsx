@@ -1,11 +1,29 @@
+
 "use client";
 
 import { Button } from "@mantine/core";
-import { bundleProducts } from "@/data/products";
+import { getBundles } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Bundle } from "@/lib/api";
 
 export function FeaturedBundle() {
+  const [bundleProducts, setBundleProducts] = useState<Bundle[]>([]);
+
+  useEffect(() => {
+    async function fetchBundles() {
+      const bundles = await getBundles();
+      setBundleProducts(bundles);
+    }
+
+    fetchBundles();
+  }, []);
+
+  if (bundleProducts.length === 0) {
+    return null;
+  }
+
   return (
     <section className="mb-12 rounded-xl bg-pink-50 p-6 md:p-8">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-center">

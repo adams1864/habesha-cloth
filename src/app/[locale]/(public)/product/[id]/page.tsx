@@ -1,24 +1,25 @@
-import { Header } from "@/components/landing/Header";
-import { Footer } from "@/components/landing/Footer";
+
+import { getProduct } from "@/lib/api";
+import { notFound } from "next/navigation";
 import { Breadcrumb } from "./_components/Breadcrumb";
 import { ProductImageGallery } from "./_components/ProductImageGallery";
 import { ProductInfo } from "./_components/ProductInfo";
 import { ReviewsSection } from "./_components/ReviewsSection";
-import { products, reviews } from "@/data/products";
-import { notFound } from "next/navigation";
+import { reviews } from "@/data/products";
 
 export default async function ProductDetailPage(props: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id } = await props.params;
+  const { id } = props.params;
 
-  const product = products.find((p) => p.id === Number(id));
+  const product = await getProduct(id);
 
   if (!product) {
     notFound();
   }
 
   const productImages = product.images || [product.image];
+
 
   return (
     <div className="flex min-h-screen w-full flex-col">
