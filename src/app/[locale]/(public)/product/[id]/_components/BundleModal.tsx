@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Button, ActionIcon, Checkbox } from "@mantine/core";
-import { products, type Product } from "@/data/products";
+import { Button, ActionIcon, Checkbox, Loader, Text } from "@mantine/core";
+import { getProducts, type Product } from "@/lib/api";
 
 interface BundleModalProps {
   currentProduct: Product;
@@ -14,18 +14,48 @@ export function BundleModal({ currentProduct, onClose }: BundleModalProps) {
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([
     currentProduct,
   ]);
+  const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const availableProducts = products.filter((p) => p.id !== currentProduct.id);
+  useEffect(() => {
+    let active = true;
+    setIsLoading(true);
+    getProducts({ perPage: 24, status: "published" })
+      .then(({ data }) => {
+        if (!active) return;
+        setAvailableProducts(
+          data.filter((product) => product.id !== currentProduct.id),
+        );
+      })
+      .catch((error) => {
+        console.error("Failed to load products for bundle modal", error);
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [currentProduct.id]);
 
   const handleToggleProduct = (product: Product) => {
-    if (selectedProducts.find((p) => p.id === product.id)) {
-      setSelectedProducts(selectedProducts.filter((p) => p.id !== product.id));
-    } else if (selectedProducts.length < 6) {
-      setSelectedProducts([...selectedProducts, product]);
-    }
+    setSelectedProducts((prev) => {
+      const exists = prev.some((entry) => entry.id === product.id);
+
+      if (exists) {
+        return prev.filter((entry) => entry.id !== product.id);
+      }
+
+      if (prev.length >= 6) {
+        return prev;
+      }
+
+      return [...prev, product];
+    });
   };
 
-  const subtotal = selectedProducts.reduce((sum, p) => sum + p.price, 0);
+  const subtotal = selectedProducts.reduce((sum, p) => sum + (p.price ?? 0), 0);
   const discount = subtotal * 0.1;
   const total = subtotal - discount;
 
@@ -87,10 +117,24 @@ export function BundleModal({ currentProduct, onClose }: BundleModalProps) {
               Add up to 5 more items:
             </h3>
             <div className="space-y-4 pr-4 max-h-[400px] overflow-y-auto">
-              {availableProducts.slice(0, 5).map((product) => {
+              {isLoading && (
+                <div className="flex justify-center py-6">
+                  <Loader color="red" size="sm" />
+                </div>
+              )}
+
+              {!isLoading && availableProducts.length === 0 && (
+                <Text size="sm" c="dimmed">
+                  No additional products are available at the moment.
+                </Text>
+              )}
+
+              {!isLoading &&
+                availableProducts.slice(0, 5).map((product) => {
                 const isSelected = selectedProducts.find(
                   (p) => p.id === product.id,
                 );
+                  const productImage = product.images?.[0] ?? product.coverImage;
                 return (
                   <div
                     key={product.id}
@@ -110,7 +154,7 @@ export function BundleModal({ currentProduct, onClose }: BundleModalProps) {
                     />
                     <div className="relative h-16 w-16 flex-shrink-0 rounded bg-gray-50 overflow-hidden">
                       <Image
-                        src={product.image}
+                        src={productImage}
                         alt={product.name}
                         fill
                         className="object-cover"
@@ -135,44 +179,47 @@ export function BundleModal({ currentProduct, onClose }: BundleModalProps) {
               Your Giftbox ({selectedProducts.length}/6 items)
             </h3>
             <div className="flex-1 space-y-4">
-              {selectedProducts.map((product) => (
-                <div key={product.id} className="flex items-center gap-4">
-                  <div className="relative h-16 w-16 flex-shrink-0 rounded bg-white overflow-hidden">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-800">{product.name}</p>
-                    <p className="text-sm text-gray-500">
-                      ETB {product.price.toFixed(2)}
-                    </p>
-                  </div>
-                  {product.id !== currentProduct.id && (
-                    <ActionIcon
-                      onClick={() => handleToggleProduct(product)}
-                      variant="subtle"
-                      color="gray"
-                      size="sm"
-                      aria-label={`Remove ${product.name} from giftbox`}
-                    >
-                      <svg
-                        className="h-5 w-5"
-                        fill="currentColor"
-                        viewBox="0 0 256 256"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
+              {selectedProducts.map((product) => {
+                const productImage = product.images?.[0] ?? product.coverImage;
+                return (
+                  <div key={product.id} className="flex items-center gap-4">
+                    <div className="relative h-16 w-16 flex-shrink-0 rounded bg-white overflow-hidden">
+                      <Image
+                        src={productImage}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-800">{product.name}</p>
+                      <p className="text-sm text-gray-500">
+                        ETB {(product.price ?? 0).toFixed(2)}
+                      </p>
+                    </div>
+                    {product.id !== currentProduct.id && (
+                      <ActionIcon
+                        onClick={() => handleToggleProduct(product)}
+                        variant="subtle"
+                        color="gray"
+                        size="sm"
+                        aria-label={`Remove ${product.name} from giftbox`}
                       >
-                        <title>Delete icon</title>
-                        <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z" />
-                      </svg>
-                    </ActionIcon>
-                  )}
-                </div>
-              ))}
+                        <svg
+                          className="h-5 w-5"
+                          fill="currentColor"
+                          viewBox="0 0 256 256"
+                          xmlns="http://www.w3.org/2000/svg"
+                          aria-hidden="true"
+                        >
+                          <title>Delete icon</title>
+                          <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z" />
+                        </svg>
+                      </ActionIcon>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             <div className="mt-6 border-t border-gray-200 pt-4">

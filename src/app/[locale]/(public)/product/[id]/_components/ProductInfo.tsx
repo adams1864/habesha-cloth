@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@mantine/core";
 import { useRouter } from "@/i18n/routing";
 import { StarRating } from "./StarRating";
 import { SizeSelector } from "./SizeSelector";
 import { ColorSelector } from "./ColorSelector";
 import { BundleModal } from "./BundleModal";
-import type { Product } from "@/data/products";
+import type { Product } from "@/lib/api";
 
 interface ProductInfoProps {
   product: Product;
@@ -16,6 +16,25 @@ interface ProductInfoProps {
 export function ProductInfo({ product }: ProductInfoProps) {
   const [showBundleModal, setShowBundleModal] = useState(false);
   const router = useRouter();
+
+  const sizes = useMemo(() => {
+    if (!product.size) return [] as string[];
+    return product.size
+      .split(",")
+      .map((size) => size.trim())
+      .filter(Boolean);
+  }, [product.size]);
+
+  const formattedPrice = useMemo(() => {
+    if (!Number.isFinite(product.price)) {
+      return `ETB ${product.price}`;
+    }
+    return new Intl.NumberFormat("en-ET", {
+      style: "currency",
+      currency: "ETB",
+      minimumFractionDigits: 2,
+    }).format(product.price);
+  }, [product.price]);
 
   const handleBuyNow = () => {
     // TODO: Add product to cart before redirecting
@@ -47,13 +66,13 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <p className="text-gray-600">{product.description}</p>
         )}
 
-        {product.sizes && <SizeSelector sizes={product.sizes} />}
+        {sizes.length > 0 && <SizeSelector sizes={sizes} />}
 
-        {product.colors && <ColorSelector colors={product.colors} />}
+        {product.colors.length > 0 && <ColorSelector colors={product.colors} />}
 
         <div className="flex flex-col gap-4">
           <span className="text-3xl font-bold text-[#d6001c]">
-            ETB {product.price.toFixed(2)}
+            {formattedPrice}
           </span>
           <div className="flex gap-3">
             <Button

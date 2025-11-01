@@ -42,9 +42,12 @@ export function useProductForm({ product }: UseProductFormProps) {
     setCreating(true);
     try {
       const formData = new FormData();
-      formData.append("name", data.title.en);
-      formData.append("description", data.description.en);
-      formData.append("price", data.price.toString());
+      const titleEn = typeof data.title?.en === "string" ? data.title.en : "";
+      const descriptionEn = typeof data.description?.en === "string" ? data.description.en : "";
+
+      formData.append("name", titleEn);
+      formData.append("description", descriptionEn);
+  formData.append("price", data.price.toFixed(2));
       formData.append("stock", data.stock.toString());
       formData.append("category", data.category);
       formData.append("size", data.size);
