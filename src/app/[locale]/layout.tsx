@@ -1,4 +1,3 @@
-import { ColorSchemeScript } from "@mantine/core";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { notFound } from "next/navigation";
@@ -76,26 +75,20 @@ export default async function LocaleLayout(props: Props) {
   });
 
   return (
-    <html lang={locale} suppressHydrationWarning={true}>
-      <head>
-        <ColorSchemeScript />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/favicon.svg" />
-        <link rel="shortcut icon" href="/favicon.svg" />
-      </head>
-      <body
-        className={cn("h-screen w-full", inter.className)}
-        style={styles}
-        suppressHydrationWarning={true}
-      >
-        <NuqsAdapter>
-          <NextIntlClientProvider messages={messages}>
-            <RootStyleRegistry color={defaultTheme} radius={radius}>
-              <Suspense>{children}</Suspense>
-            </RootStyleRegistry>
-          </NextIntlClientProvider>
-        </NuqsAdapter>
-      </body>
-    </html>
+    <NuqsAdapter>
+      <NextIntlClientProvider messages={messages}>
+        <RootStyleRegistry color={defaultTheme} radius={radius}>
+          <Suspense>
+            <div
+              className={cn("min-h-screen w-full", inter.className)}
+              style={styles}
+              suppressHydrationWarning={true}
+            >
+              {children}
+            </div>
+          </Suspense>
+        </RootStyleRegistry>
+      </NextIntlClientProvider>
+    </NuqsAdapter>
   );
 }

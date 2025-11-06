@@ -1,18 +1,20 @@
 "use client";
 
 import {
+  Alert,
   Box,
   Button,
   Grid,
   Group,
+  MultiSelect,
   NumberInput,
   Select,
-  MultiSelect,
   Stack,
   Text,
 } from "@mantine/core";
 import type React from "react";
 import { Controller } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { ImageInput } from "@/components/form/ImageInput";
 import { LocaleInputText } from "@/components/locale/LocaleInputText";
 import { LocaleInputTextarea } from "@/components/locale/LocaleInputTextarea";
@@ -25,6 +27,7 @@ import {
   PRODUCT_STATUS,
 } from "../_actions/product.schema";
 import { useProductForm } from "./useProductForm";
+import { IconCheck, IconInfoCircle } from "@tabler/icons-react";
 
 type FormDetailProps = {
   mode?: "new" | "detail";
@@ -33,6 +36,8 @@ type FormDetailProps = {
 
 const ProductFormDetails: React.FC<FormDetailProps> = (props) => {
   const { mode = "new", product } = props;
+
+  const router = useRouter();
 
   const {
     form,
@@ -48,6 +53,10 @@ const ProductFormDetails: React.FC<FormDetailProps> = (props) => {
     imageFiles,
     handleImageFileChange,
     handleImageDelete,
+    feedbackSuccess,
+    feedbackError,
+    dismissFeedbackSuccess,
+    dismissFeedbackError,
   } = useProductForm(props);
 
   const {
@@ -62,6 +71,31 @@ const ProductFormDetails: React.FC<FormDetailProps> = (props) => {
     <Box className="max-w-9xl flex w-full">
       <Box className="w-full">
         <Stack gap="md">
+          {feedbackSuccess ? (
+            <Alert
+              color="green"
+              radius="md"
+              icon={<IconCheck size={18} />}
+              variant="light"
+              withCloseButton
+              onClose={dismissFeedbackSuccess}
+            >
+              {feedbackSuccess}
+            </Alert>
+          ) : null}
+          {feedbackError ? (
+            <Alert
+              color="red"
+              radius="md"
+              icon={<IconInfoCircle size={18} />}
+              variant="light"
+              withCloseButton
+              onClose={dismissFeedbackError}
+            >
+              {feedbackError}
+            </Alert>
+          ) : null}
+
           <LocaleInputText
             label="Title"
             field="title"
@@ -294,7 +328,11 @@ const ProductFormDetails: React.FC<FormDetailProps> = (props) => {
             </Group>
 
             <Group>
-              <Button variant="default" disabled={isSubmitting}>
+              <Button
+                variant="default"
+                disabled={isSubmitting}
+                onClick={() => router.back()}
+              >
                 Cancel
               </Button>
               <Button

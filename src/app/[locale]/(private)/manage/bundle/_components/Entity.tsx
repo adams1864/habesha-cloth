@@ -32,18 +32,20 @@ type Bundle = {
   status: "published" | "unpublished";
   coverImage: { url: string } | null;
   products: { id: string; name: string | Record<string, string> }[];
+  productCount: number;
 };
 
 type EntityProps = {
   data: Bundle[];
   total: number;
+  perPage?: number;
 };
 
-export function Entity({ data = [], total }: EntityProps) {
+export function Entity({ data = [], total, perPage }: EntityProps) {
   const sortBy = [
+    { label: "Newest", value: "createdAt" },
     { label: "Title", value: "title" },
     { label: "Status", value: "status" },
-    { label: "Products", value: "products" },
   ];
 
   const filterOption = [
@@ -85,7 +87,7 @@ export function Entity({ data = [], total }: EntityProps) {
 
             <Box className="flex items-center gap-2">
               <Box className="flex items-center gap-2">
-                <EntityFilter filterOptions={filterOption} />
+                <EntityFilter filterOptions={filterOption} queryKey="status" />
                 <Button.Group>
                   <EntitySort sortOptions={sortBy} />
                 </Button.Group>
@@ -137,8 +139,8 @@ export function Entity({ data = [], total }: EntityProps) {
                 </Td>
                 <Td>
                   <Badge variant="light" color="blue">
-                    {element.products.length} Product
-                    {element.products.length !== 1 ? "s" : ""}
+                    {element.productCount} Product
+                    {element.productCount !== 1 ? "s" : ""}
                   </Badge>
                 </Td>
                 <Td>
@@ -167,7 +169,7 @@ export function Entity({ data = [], total }: EntityProps) {
         </DisplayTable>
       )}
 
-      <EntityPagination total={total} />
+      <EntityPagination total={total} perPage={perPage} />
     </Stack>
   );
 }

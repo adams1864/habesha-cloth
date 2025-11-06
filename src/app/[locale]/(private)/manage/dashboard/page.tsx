@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Grid, Text, Box, Group } from "@mantine/core";
+import { Card, Grid, Text, Box, Group, Skeleton } from "@mantine/core";
 import {
   IconBrandProducthunt,
   IconPackage,
@@ -9,48 +9,130 @@ import {
   IconDiscount,
   IconCurrencyDollar,
 } from "@tabler/icons-react";
+import { useEffect, useMemo, useState } from "react";
+import { getBundles, getProducts } from "@/lib/api";
 
-// Dummy stats data
-const stats = [
+type StatConfig = {
+  key: keyof DashboardCounts;
+  title: string;
+  icon: (typeof IconBrandProducthunt);
+  color: string;
+  format?: (value: number) => string;
+};
+
+type DashboardCounts = {
+  products: number;
+  bundles: number;
+  orders: number;
+  leads: number;
+  discounts: number;
+  revenue: number;
+};
+
+const STAT_CONFIG: StatConfig[] = [
   {
+    key: "products",
     title: "Total Products",
-    value: "24",
     icon: IconBrandProducthunt,
     color: "blue",
   },
   {
+    key: "bundles",
     title: "Total Bundles",
-    value: "8",
     icon: IconPackage,
     color: "grape",
   },
   {
+    key: "orders",
     title: "Total Orders",
-    value: "147",
     icon: IconReorder,
     color: "green",
   },
   {
+    key: "leads",
     title: "Total Leads",
-    value: "52",
     icon: IconShoppingCart,
     color: "orange",
   },
   {
+    key: "discounts",
     title: "Active Discounts",
-    value: "5",
     icon: IconDiscount,
     color: "pink",
   },
   {
+    key: "revenue",
     title: "Total Revenue",
-    value: "ETB 12,450",
     icon: IconCurrencyDollar,
     color: "teal",
+    format: (value) => `ETB ${value.toLocaleString()}`,
   },
 ];
 
+const DEFAULT_COUNTS: DashboardCounts = {
+  products: 0,
+  bundles: 0,
+  orders: 0,
+  leads: 0,
+  discounts: 0,
+  revenue: 0,
+};
+
 export default function DashboardPage() {
+  const [counts, setCounts] = useState<DashboardCounts>(DEFAULT_COUNTS);
+  const [loading, setLoading] = useState(true);
+
+  const numberFormatter = useMemo(() => new Intl.NumberFormat(), []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCounts() {
+      try {
+        setLoading(true);
+        const [productResponse, bundleResponse] = await Promise.all([
+          getProducts({ page: 1, perPage: 1 }),
+          getBundles({ page: 1, perPage: 1 }),
+        ]);
+
+        if (cancelled) return;
+
+        setCounts((previous) => ({
+          ...previous,
+          products: productResponse.meta.total,
+          bundles: bundleResponse.meta.total,
+        }));
+      } catch (error) {
+        console.error("Failed to load dashboard counts", error);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadCounts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const stats = STAT_CONFIG.map((config) => {
+    const Icon = config.icon;
+    const rawValue = counts[config.key];
+    const formattedValue = config.format
+      ? config.format(rawValue)
+      : numberFormatter.format(rawValue);
+
+    return {
+      title: config.title,
+      icon: Icon,
+      color: config.color,
+      value: formattedValue,
+    };
+  });
+
   return (
     <Box>
       <Text size="xl" fw={700} mb="lg">
@@ -69,7 +151,7 @@ export default function DashboardPage() {
                       {stat.title}
                     </Text>
                     <Text size="xl" fw={700} mt="xs">
-                      {stat.value}
+                      {loading ? <Skeleton height={20} width={60} /> : stat.value}
                     </Text>
                   </Box>
                   <Box

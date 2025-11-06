@@ -1,97 +1,70 @@
-"use client";
-
+import type { Bundle, BundleQuery } from "@/lib/api";
+import { getBundles } from "@/lib/api";
+import { PAGE_SIZE } from "@/constants/pagination";
 import { Entity } from "./_components/Entity";
 
-// Dummy data for bundles
-const dummyBundles = [
-  {
-    id: "1",
-    title: { en: "Summer Collection", am: "የበጋ ስብስብ" },
-    description: {
-      en: "Perfect bundle for the summer season",
-      am: "ለበጋ ወራት ጥሩ ስብስብ",
-    },
-    status: "published" as const,
-    coverImage: {
-      url: "https://placehold.co/600x400/4A90E2/ffffff?text=Summer",
-    },
-    products: [
-      { id: "1", name: { en: "Premium Cotton T-Shirt", am: "ፕሪሚየም ጥጥ ሸሚዝ" } },
-      { id: "4", name: { en: "Summer Dress", am: "የበጋ ቀሚስ" } },
-      { id: "8", name: { en: "Sun Hat", am: "የፀሐይ ኮፍያ" } },
-    ],
-  },
-  {
-    id: "2",
-    title: { en: "Winter Essentials", am: "የክረምት አስፈላጊዎች" },
-    description: {
-      en: "Stay warm with our winter bundle",
-      am: "በክረምት ስብስባችን ሞቅ ይበሉ",
-    },
-    status: "published" as const,
-    coverImage: {
-      url: "https://placehold.co/600x400/E27A3F/ffffff?text=Winter",
-    },
-    products: [
-      { id: "2", name: { en: "Leather Jacket", am: "ቆዳ ጃኬት" } },
-      { id: "5", name: { en: "Winter Coat", am: "የክረምት ኮት" } },
-      { id: "3", name: { en: "Cotton Pants", am: "ጥጥ ሱሪ" } },
-    ],
-  },
-  {
-    id: "3",
-    title: { en: "School Starter Pack", am: "የትምህርት ቤት መጀመሪያ ጥቅል" },
-    description: {
-      en: "Everything you need to start school",
-      am: "ትምህርት ቤትን ለመጀመር የሚያስፈልግዎ ሁሉ",
-    },
-    status: "unpublished" as const,
-    coverImage: {
-      url: "https://placehold.co/600x400/45B7D1/ffffff?text=School",
-    },
-    products: [
-      { id: "7", name: { en: "Backpack", am: "የጀርባ ቦርሳ" } },
-      { id: "1", name: { en: "Premium Cotton T-Shirt", am: "ፕሪሚየም ጥጥ ሸሚዝ" } },
-      { id: "3", name: { en: "Cotton Pants", am: "ጥጥ ሱሪ" } },
-      { id: "6", name: { en: "Sneakers", am: "ስኒከርስ" } },
-    ],
-  },
-  {
-    id: "4",
-    title: { en: "Casual Combo", am: "መደበኛ ያልሆነ ጥምረት" },
-    description: {
-      en: "Casual wear for everyday comfort",
-      am: "ለዕለት ተዕለት ምቾት መደበኛ ያልሆነ ልብስ",
-    },
-    status: "published" as const,
-    coverImage: {
-      url: "https://placehold.co/600x400/96CEB4/ffffff?text=Casual",
-    },
-    products: [
-      { id: "1", name: { en: "Premium Cotton T-Shirt", am: "ፕሪሚየም ጥጥ ሸሚዝ" } },
-      { id: "3", name: { en: "Cotton Pants", am: "ጥጥ ሱሪ" } },
-      { id: "6", name: { en: "Sneakers", am: "ስኒከርስ" } },
-    ],
-  },
-  {
-    id: "5",
-    title: { en: "Adventure Pack", am: "የጀብድ ጥቅል" },
-    description: {
-      en: "Ready for outdoor adventures",
-      am: "ለውጭ ጀብዱ ዝግጁ",
-    },
-    status: "unpublished" as const,
-    coverImage: {
-      url: "https://placehold.co/600x400/F4A259/ffffff?text=Adventure",
-    },
-    products: [
-      { id: "7", name: { en: "Backpack", am: "የጀርባ ቦርሳ" } },
-      { id: "8", name: { en: "Sun Hat", am: "የፀሐይ ኮፍያ" } },
-      { id: "6", name: { en: "Sneakers", am: "ስኒከርስ" } },
-    ],
-  },
-];
+type PageProps = {
+  searchParams?: Record<string, string | string[] | undefined>;
+};
 
-export default function BundlePage() {
-  return <Entity data={dummyBundles} total={dummyBundles.length} />;
+function getParamValue(params: PageProps["searchParams"], key: string) {
+  const value = params?.[key];
+  if (Array.isArray(value)) return value[0];
+  return value ?? undefined;
+}
+
+function mapBundleForTable(bundle: Bundle) {
+  const products = Array.isArray(bundle.products) ? bundle.products : [];
+  const productCount = Array.isArray(bundle.productIds)
+    ? bundle.productIds.length
+    : Array.isArray(bundle.products)
+      ? bundle.products.length
+      : 0;
+
+  return {
+    id: String(bundle.id),
+    title: bundle.title ?? "",
+    description: bundle.description ?? "",
+    status: bundle.status,
+    coverImage: bundle.coverImage ? { url: bundle.coverImage } : null,
+    products: products.map((product) => ({
+      id: String(product.id),
+      name: product.name ?? "",
+    })),
+    productCount,
+  };
+}
+
+export default async function BundlePage({ searchParams }: PageProps) {
+  const statusParam = getParamValue(searchParams, "status");
+  const search = getParamValue(searchParams, "search")?.trim();
+  const pageRaw = Number(getParamValue(searchParams, "page"));
+  const page = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
+  const sortParam = getParamValue(searchParams, "sort");
+  const orderParam = getParamValue(searchParams, "order");
+
+  const sort =
+    sortParam && ["createdAt", "title", "status"].includes(sortParam)
+      ? (sortParam as BundleQuery["sort"])
+      : undefined;
+
+  const query = {
+    page,
+    perPage: PAGE_SIZE,
+    search: search && search.length > 0 ? search : undefined,
+    status: statusParam && statusParam !== "all" ? statusParam : undefined,
+  sort,
+    order: orderParam === "asc" ? "asc" : "desc",
+  } as const;
+
+  const result = await getBundles(query).catch(() => null);
+  if (!result) {
+    return <Entity data={[]} total={0} perPage={PAGE_SIZE} />;
+  }
+
+  const rows = result.data.map(mapBundleForTable);
+
+  return (
+    <Entity data={rows} total={result.meta.total} perPage={result.meta.perPage} />
+  );
 }

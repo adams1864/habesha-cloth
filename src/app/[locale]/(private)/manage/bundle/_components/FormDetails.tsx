@@ -3,6 +3,7 @@
 import { Box, Button, Grid, Group, Select, Stack, Text } from "@mantine/core";
 import type React from "react";
 import { useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Controller } from "react-hook-form";
 import { ImageInput } from "@/components/form/ImageInput";
 import {
@@ -14,6 +15,7 @@ import { LocaleInputTextarea } from "@/components/locale/LocaleInputTextarea";
 import type { BundleFormData } from "../_actions/bundle.schema";
 import { BUNDLE_STATUS } from "../_actions/bundle.schema";
 import { useBundleForm } from "./useBundleForm";
+import { getProducts as fetchProducts } from "@/lib/api";
 
 type FormDetailProps = {
   mode?: "new" | "detail";
@@ -22,6 +24,8 @@ type FormDetailProps = {
 
 const BundleFormDetails: React.FC<FormDetailProps> = (props) => {
   const { mode = "new", bundle } = props;
+
+  const router = useRouter();
 
   const {
     form,
@@ -46,26 +50,20 @@ const BundleFormDetails: React.FC<FormDetailProps> = (props) => {
 
   // Function to fetch products for SelectRelation
   const getProducts = useCallback(async ({ search }: { search: string }) => {
-    // TODO: Replace with actual API call
-    // This is dummy data for now
-    const dummyProducts = [
-      { id: "1", name: { en: "Premium Cotton T-Shirt", am: "ፕሪሚየም ጥጥ ሸሚዝ" } },
-      { id: "2", name: { en: "Leather Jacket", am: "ቆዳ ጃኬት" } },
-      { id: "3", name: { en: "Cotton Pants", am: "ጥጥ ሱሪ" } },
-      { id: "4", name: { en: "Summer Dress", am: "የበጋ ቀሚስ" } },
-      { id: "5", name: { en: "Winter Coat", am: "የክረምት ኮት" } },
-      { id: "6", name: { en: "Sneakers", am: "ስኒከርስ" } },
-      { id: "7", name: { en: "Backpack", am: "የጀርባ ቦርሳ" } },
-      { id: "8", name: { en: "Sun Hat", am: "የፀሐይ ኮፍያ" } },
-    ];
+    try {
+      const result = await fetchProducts({
+        perPage: 20,
+        search: search && search.trim().length > 0 ? search.trim() : undefined,
+      });
 
-    const filtered = dummyProducts.filter((product) => {
-      const name =
-        typeof product.name === "string" ? product.name : product.name.en;
-      return name.toLowerCase().includes(search.toLowerCase());
-    });
-
-    return filtered as OptionType[];
+      return result.data.map((product) => ({
+        id: String(product.id),
+        name: product.name ?? "Untitled product",
+      })) as OptionType[];
+    } catch (error) {
+      console.error("Failed to load products for bundle form", error);
+      return [];
+    }
   }, []);
 
   return (
@@ -155,7 +153,11 @@ const BundleFormDetails: React.FC<FormDetailProps> = (props) => {
               control={control}
               render={({ field }) => (
                 <SelectRelation
-                  {...field}
+                    {...field}
+                    value={Array.isArray(field.value) ? field.value : []}
+                    onChange={(val) =>
+                      field.onChange(Array.isArray(val) ? val : [])
+                    }
                   label="Select Products"
                   description="Choose which products are included in this bundle"
                   placeholder="Search and select products"
@@ -184,7 +186,11 @@ const BundleFormDetails: React.FC<FormDetailProps> = (props) => {
             </Group>
 
             <Group>
-              <Button variant="default" disabled={isSubmitting}>
+              <Button
+                variant="default"
+                disabled={isSubmitting}
+                onClick={() => router.back()}
+              >
                 Cancel
               </Button>
               <Button

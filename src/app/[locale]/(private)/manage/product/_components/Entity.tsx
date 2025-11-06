@@ -13,7 +13,6 @@ import {
   IconShoppingBag,
   IconPlus,
 } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
 import {
   DisplayTable,
   Tbody,
@@ -36,34 +35,32 @@ type Product = {
   type?: "simple" | "bundle" | "digital";
   // Merchandising category (e.g., fabric, jackets, shoes)
   category?: string;
-  status: "published" | "draft" | "archived";
+  status: "published" | "unpublished" | "archived";
   price: number;
 };
 
 type EntityProps = {
   data: Product[];
   total: number;
+  perPage?: number;
 };
 
-export function Entity({ data = [], total }: EntityProps) {
-  //   const t = useTranslations("Common");
+export function Entity({ data = [], total, perPage }: EntityProps) {
 
   const hasType =
     Array.isArray(data) && data.some((item) => Boolean(item.type));
   const sortBy = [
-    { label: "Title", value: "title" },
+    { label: "Newest", value: "createdAt" },
+    { label: "Name", value: "name" },
     { label: "Price", value: "price" },
-    {
-      label: hasType ? "Type" : "Category",
-      value: hasType ? "type" : "category",
-    },
+    { label: hasType ? "Type" : "Status", value: hasType ? "type" : "status" },
   ];
 
   const filterOption = [
     { label: "All", value: "all" },
-    { label: "Published", value: "published" },
-    { label: "Draft", value: "draft" },
-    { label: "Archived", value: "archived" },
+  { label: "Published", value: "published" },
+  { label: "Unpublished", value: "unpublished" },
+  { label: "Archived", value: "archived" },
   ];
 
   return (
@@ -92,7 +89,7 @@ export function Entity({ data = [], total }: EntityProps) {
 
             <Box className="flex items-center gap-2">
               <Box className="flex items-center gap-2">
-                <EntityFilter filterOptions={filterOption} />
+                <EntityFilter filterOptions={filterOption} queryKey="status" />
                 <Button.Group>
                   <EntitySort sortOptions={sortBy} />
                 </Button.Group>
@@ -151,7 +148,7 @@ export function Entity({ data = [], total }: EntityProps) {
                       if (element.status === "published") {
                         return "green";
                       }
-                      if (element.status === "draft") {
+                      if (element.status === "unpublished") {
                         return "red";
                       }
                       return "gray";
@@ -179,7 +176,7 @@ export function Entity({ data = [], total }: EntityProps) {
         </DisplayTable>
       )}
 
-      <EntityPagination total={total} />
+      <EntityPagination total={total} perPage={perPage} />
     </Stack>
   );
 }

@@ -11,22 +11,23 @@ type FilterOption = {
 
 type EntityFilterProps = {
   filterOptions: FilterOption[];
+  queryKey?: string;
 };
 
-export function EntityFilter({ filterOptions }: EntityFilterProps) {
+export function EntityFilter({ filterOptions, queryKey = "filter" }: EntityFilterProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const currentFilter = searchParams.get("filter") || "all";
+  const currentFilter = searchParams.get(queryKey) || "all";
 
   const handleFilter = (value: string) => {
     const params = new URLSearchParams(searchParams);
     params.set("page", "1");
     if (value && value !== "all") {
-      params.set("filter", value);
+      params.set(queryKey, value);
     } else {
-      params.delete("filter");
+      params.delete(queryKey);
     }
     replace(`${pathname}?${params.toString()}`);
   };

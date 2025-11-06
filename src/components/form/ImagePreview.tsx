@@ -11,6 +11,17 @@ type ImagePreviewProps = {
   avatar?: boolean;
 };
 
+const FALLBACK_IMAGE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' fill='%236b7280' font-size='32' text-anchor='middle' font-family='system-ui' dy='.35em'%3ENo Image%3C/text%3E%3C/svg%3E";
+
+function sanitizeImageUrl(input: string | null | undefined): string {
+  if (!input) return FALLBACK_IMAGE;
+  if (/placehold\.co/i.test(input)) {
+    return FALLBACK_IMAGE;
+  }
+  return input;
+}
+
 export function ImagePreview({
   aspectRatio,
   value,
@@ -28,9 +39,10 @@ export function ImagePreview({
       setLoading(false);
       setShowFallback(false);
     } else if (typeof value === "string" && value) {
-      setUrl(value);
+      const sanitized = sanitizeImageUrl(value);
+      setUrl(sanitized);
       setLoading(false);
-      setShowFallback(false);
+      setShowFallback(!sanitized);
     } else {
       setShowFallback(true);
     }
@@ -60,7 +72,7 @@ export function ImagePreview({
         ) : (
           <>
             {loading && <Skeleton className="h-full w-full" />}
-            {url && (
+            {url && !showFallback && (
               <Box className="border-primary relative h-full border">
                 <Image
                   className="object-contain group-hover:opacity-10"
@@ -68,7 +80,10 @@ export function ImagePreview({
                   src={url}
                   alt=""
                   priority
-                  onError={() => setShowFallback(true)}
+                  onError={() => {
+                    setShowFallback(true);
+                    setUrl("");
+                  }}
                   onLoad={() => setLoading(false)}
                 />
               </Box>
