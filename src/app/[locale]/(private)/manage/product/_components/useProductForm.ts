@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { notifications } from "@mantine/notifications";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 import { LOCALE_INPUT_DEFAULT } from "@/utils/locale";
 import type { ProductFormData } from "../_actions/product.schema";
 import { productSchema } from "../_actions/product.schema";
@@ -85,15 +86,29 @@ export function useProductForm({ mode = "new", product }: UseProductFormProps) {
       data.color.forEach((color) => formData.append("color", color));
       formData.append("status", data.status);
 
+      // Upload files to Cloudinary first (client-side unsigned). Replace file fields with returned URLs.
       if (coverFile) {
-        formData.append("coverImage", coverFile);
+        try {
+          const coverUrl = await uploadToCloudinary(coverFile);
+          formData.append("coverImage", coverUrl);
+        } catch (err) {
+          console.error("Cover upload failed:", err);
+          throw new Error("Failed to upload cover image. Check Cloudinary settings.");
+        }
       }
 
-      imageFiles.forEach((file, index) => {
+      for (let i = 0; i < imageFiles.length; i++) {
+        const file = imageFiles[i];
         if (file) {
-          formData.append(`image${index + 1}`, file);
+          try {
+            const imageUrl = await uploadToCloudinary(file);
+            formData.append(`image${i + 1}`, imageUrl);
+          } catch (err) {
+            console.error(`Image ${i + 1} upload failed:`, err);
+            throw new Error("Failed to upload one of the product images. Check Cloudinary settings.");
+          }
         }
-      });
+      }
 
       const created = await createProduct(formData);
 
@@ -155,17 +170,31 @@ export function useProductForm({ mode = "new", product }: UseProductFormProps) {
       data.color.forEach((color) => formData.append("color", color));
       formData.append("status", data.status);
 
+      // Upload new files to Cloudinary and append URLs. If coverDeleted and no new cover, send empty string to clear.
       if (coverFile) {
-        formData.append("coverImage", coverFile);
+        try {
+          const coverUrl = await uploadToCloudinary(coverFile);
+          formData.append("coverImage", coverUrl);
+        } catch (err) {
+          console.error("Cover upload failed:", err);
+          throw new Error("Failed to upload cover image. Check Cloudinary settings.");
+        }
       } else if (coverDeleted) {
         formData.append("coverImage", "");
       }
 
-      imageFiles.forEach((file, index) => {
+      for (let i = 0; i < imageFiles.length; i++) {
+        const file = imageFiles[i];
         if (file) {
-          formData.append(`image${index + 1}`, file);
+          try {
+            const imageUrl = await uploadToCloudinary(file);
+            formData.append(`image${i + 1}`, imageUrl);
+          } catch (err) {
+            console.error(`Image ${i + 1} upload failed:`, err);
+            throw new Error("Failed to upload one of the product images. Check Cloudinary settings.");
+          }
         }
-      });
+      }
 
       imagesDeleted.forEach((removed, index) => {
         if (removed && !imageFiles[index]) {

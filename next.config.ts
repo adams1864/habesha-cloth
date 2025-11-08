@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
         pathname: "/aida-public/**",
       },
       {
+        // Allow Cloudinary-hosted images (used by client-side unsigned uploads)
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
+      {
         protocol: "http",
         hostname: "localhost",
         port: "4000",

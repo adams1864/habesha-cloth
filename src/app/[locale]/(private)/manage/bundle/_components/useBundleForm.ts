@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { notifications } from "@mantine/notifications";
 import { createBundle, updateBundle, deleteBundle } from "@/lib/api";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 import { LOCALE_INPUT_DEFAULT } from "@/utils/locale";
 import type { BundleFormData } from "../_actions/bundle.schema";
 import { bundleSchema } from "../_actions/bundle.schema";
@@ -99,7 +100,13 @@ export function useBundleForm({ bundle }: UseBundleFormProps) {
       }
 
       if (coverFile instanceof File) {
-        formData.append("cover", coverFile);
+        try {
+          const coverUrl = await uploadToCloudinary(coverFile);
+          formData.append("coverImage", coverUrl);
+        } catch (err) {
+          console.error("Bundle cover upload failed:", err);
+          throw new Error("Failed to upload bundle cover image. Check Cloudinary settings.");
+        }
       }
 
       const created = await createBundle(formData);
@@ -160,7 +167,13 @@ export function useBundleForm({ bundle }: UseBundleFormProps) {
       }
 
       if (coverFile instanceof File) {
-        formData.append("cover", coverFile);
+        try {
+          const coverUrl = await uploadToCloudinary(coverFile);
+          formData.append("coverImage", coverUrl);
+        } catch (err) {
+          console.error("Bundle cover upload failed:", err);
+          throw new Error("Failed to upload bundle cover image. Check Cloudinary settings.");
+        }
       } else if (coverDeleted) {
         formData.append("coverImage", "");
       }
