@@ -1,5 +1,6 @@
 const DEFAULT_API_BASE_URL = "http://localhost:4000/api";
-const PLACEHOLDER_IMAGE = "https://placehold.co/600x800?text=No+Image";
+const PLACEHOLDER_IMAGE =
+	"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='800' viewBox='0 0 600 800'%3E%3Crect width='600' height='800' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' fill='%236b7280' font-size='32' text-anchor='middle' font-family='system-ui' dy='.35em'%3ENo Image%3C/text%3E%3C/svg%3E";
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? DEFAULT_API_BASE_URL).replace(/\/$/, "");
 

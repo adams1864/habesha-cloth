@@ -3,9 +3,21 @@ import { FilterBar } from "@/components/landing/FilterBar";
 import { FeaturedBundle } from "@/components/landing/FeaturedBundle";
 import { ProductGrid } from "@/components/landing/ProductGrid";
 import { Footer } from "@/components/landing/Footer";
-import { products } from "@/data/products";
+import { getProducts } from "@/lib/api";
 
-export default function Page() {
+type PageProps = {
+  params: { locale: string };
+};
+
+export default async function Page({ params: _params }: PageProps) {
+  const productsResponse = await getProducts({
+    status: "published",
+    perPage: 16,
+    page: 1,
+  }).catch(() => null);
+
+  const availableProducts = productsResponse?.data ?? [];
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
@@ -16,7 +28,7 @@ export default function Page() {
             <FilterBar />
           </div>
           <FeaturedBundle />
-          <ProductGrid products={products} />
+          <ProductGrid products={availableProducts} />
         </div>
       </main>
       <Footer />
