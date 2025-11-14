@@ -102,6 +102,10 @@ function toAbsoluteUrl(value: unknown): string {
 		return value;
 	}
 
+	if (/^data:/i.test(value)) {
+		return value;
+	}
+
 	if (API_ORIGIN) {
 		if (value.startsWith("/")) {
 			return `${API_ORIGIN}${value}`;
