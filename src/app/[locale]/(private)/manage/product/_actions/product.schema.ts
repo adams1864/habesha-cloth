@@ -50,6 +50,7 @@ export const PRODUCT_COLORS = [
 export const PRODUCT_STATUS = [
   { value: "published", label: "Published" },
   { value: "unpublished", label: "Unpublished" },
+  { value: "archived", label: "Archived" },
 ] as const;
 
 export const productSchema = z.object({
@@ -66,7 +67,7 @@ export const productSchema = z.object({
     .number({ message: "Stock must be a number" })
     .int("Stock must be a whole number")
     .min(0, "Stock cannot be negative"),
-  status: z.enum(["published", "unpublished"], {
+  status: z.enum(["published", "unpublished", "archived"], {
     message: "Status is required",
   }),
   coverImage: z
