@@ -18,7 +18,12 @@ export default async function ProductDetailPage(props: {
     notFound();
   }
 
-  const productImages = product.images || [product.image];
+  const productImages =
+    product.images.length > 0
+      ? product.images
+      : product.coverImage
+        ? [product.coverImage]
+        : [];
 
 
   return (

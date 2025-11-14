@@ -47,11 +47,19 @@ export const PRODUCT_COLORS = [
 ] as const;
 
 // Product status
-export const PRODUCT_STATUS = [
+export const PRODUCT_STATUS_VALUES = [
+  "published",
+  "unpublished",
+  "archived",
+] as const;
+
+export type ProductStatus = (typeof PRODUCT_STATUS_VALUES)[number];
+
+export const PRODUCT_STATUS: ReadonlyArray<{ value: ProductStatus; label: string }> = [
   { value: "published", label: "Published" },
   { value: "unpublished", label: "Unpublished" },
   { value: "archived", label: "Archived" },
-] as const;
+];
 
 export const productSchema = z.object({
   title: LOCALE_REQUIRED_INPUT_SCHEMA,
@@ -67,7 +75,7 @@ export const productSchema = z.object({
     .number({ message: "Stock must be a number" })
     .int("Stock must be a whole number")
     .min(0, "Stock cannot be negative"),
-  status: z.enum(["published", "unpublished", "archived"], {
+  status: z.enum(PRODUCT_STATUS_VALUES, {
     message: "Status is required",
   }),
   coverImage: z

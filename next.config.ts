@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-const nextConfig: NextConfig = {
+type ExtendedNextConfig = NextConfig & {
+  turbopack?: {
+    root?: string;
+  };
+};
+
+const nextConfig: ExtendedNextConfig = {
   images: {
     remotePatterns: [
       {
@@ -22,6 +28,9 @@ const nextConfig: NextConfig = {
         pathname: "/uploads/**",
       },
     ],
+  },
+  turbopack: {
+    root: __dirname,
   },
 };
 

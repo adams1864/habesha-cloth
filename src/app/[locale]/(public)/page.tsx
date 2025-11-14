@@ -5,7 +5,7 @@ import { ProductGrid } from "@/components/landing/ProductGrid";
 import { getProducts } from "@/lib/api";
 
 export default async function Page() {
-  const products = await getProducts();
+  const { data: products } = await getProducts();
 
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
