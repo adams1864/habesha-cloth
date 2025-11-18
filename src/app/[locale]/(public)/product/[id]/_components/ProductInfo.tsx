@@ -5,6 +5,7 @@ import { Button } from "@mantine/core";
 import { useRouter } from "@/i18n/routing";
 import { StarRating } from "./StarRating";
 import { SizeSelector } from "./SizeSelector";
+import TelegramButton from "@/components/telegram/TelegramButton";
 import { ColorSelector } from "./ColorSelector";
 import { BundleModal } from "./BundleModal";
 import type { Product } from "@/lib/api";
@@ -74,7 +75,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <span className="text-3xl font-bold text-[#d6001c]">
             {formattedPrice}
           </span>
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
             <Button
               className="flex-1"
               size="lg"
@@ -105,6 +106,9 @@ export function ProductInfo({ product }: ProductInfoProps) {
             >
               Buy Now
             </Button>
+            <div className="ml-2">
+              <TelegramButton label="Join on Telegram" />
+            </div>
           </div>
         </div>
 
