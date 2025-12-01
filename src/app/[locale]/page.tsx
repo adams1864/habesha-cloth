@@ -21,7 +21,28 @@ export default async function Page({ params: _params }: PageProps) {
 
   // Fallback to local sample products when API returns nothing so preview shows items
   if (!availableProducts || availableProducts.length === 0) {
-    availableProducts = sampleProducts;
+    availableProducts = sampleProducts.map((p) => ({
+      id: p.id,
+      name: p.name,
+      description: p.description ?? "",
+      category: (p as any).category ?? "",
+      size: p.sizes ? p.sizes.join(", ") : "",
+      gender: (p as any).gender ?? "",
+      price: p.price,
+      stock: (p as any).stock ?? 0,
+      status: "published" as const,
+      coverImage: p.image,
+      image1: null,
+      image2: null,
+      images: p.images ?? (p.image ? [p.image] : []),
+      color: "",
+      colorValues: [],
+      colors: [],
+      createdAt: null,
+      itemNumber: (p as any).itemNumber ?? null,
+      rating: null,
+      reviewCount: null,
+    }));
   }
 
   return (
