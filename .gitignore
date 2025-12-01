@@ -19,6 +19,8 @@
 
 # production
 /build
+/.vs
+/messages
 
 # misc
 .DS_Store

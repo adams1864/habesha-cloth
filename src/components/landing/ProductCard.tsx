@@ -4,7 +4,6 @@ import type { Product } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import TelegramButton from "@/components/telegram/TelegramButton";
 
 interface ProductCardProps {
   product: Product;
@@ -28,7 +27,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group relative block">
       <Link href={`/${locale}/product/${product.id}`} className="block">
-        <div className="aspect-[3/4] w-full overflow-hidden rounded-xl bg-gray-50">
+        <div className="aspect-[3/4] w-full overflow-hidden bg-gray-50">
           <div className="relative h-full w-full">
             <Image
               src={primaryImage}
@@ -40,16 +39,13 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </Link>
 
-      <div className="mt-2 flex items-center gap-3">
-        <div className="flex-1">
-          <h3 className="text-sm font-medium group-hover:text-[#d6001c] transition-colors">
-            <Link href={`/${locale}/product/${product.id}`}>{product.name}</Link>
-          </h3>
-          <p className="text-sm text-gray-600">{formattedPrice}</p>
-        </div>
-        <div className="flex-shrink-0">
-          <TelegramButton className="!px-2 !py-1 text-xs" />
-        </div>
+      <div className="mt-4 text-center">
+        <h3 className="text-lg font-light tracking-wide text-[#6d6d6d] group-hover:text-[#d6001c] transition-colors">
+          <Link href={`/${locale}/product/${product.id}`}>{product.name}</Link>
+        </h3>
+        <p className="mt-1 text-base font-light text-[#9b9b9b]">
+          {formattedPrice}
+        </p>
       </div>
     </div>
   );

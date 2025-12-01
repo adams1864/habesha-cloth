@@ -4,6 +4,7 @@ import { FeaturedBundle } from "@/components/landing/FeaturedBundle";
 import { ProductGrid } from "@/components/landing/ProductGrid";
 import { Footer } from "@/components/landing/Footer";
 import { getProducts } from "@/lib/api";
+import { products as sampleProducts } from "@/data/products";
 
 type PageProps = {
   params: { locale: string };
@@ -16,7 +17,12 @@ export default async function Page({ params: _params }: PageProps) {
     page: 1,
   }).catch(() => null);
 
-  const availableProducts = productsResponse?.data ?? [];
+  let availableProducts = productsResponse?.data ?? [];
+
+  // Fallback to local sample products when API returns nothing so preview shows items
+  if (!availableProducts || availableProducts.length === 0) {
+    availableProducts = sampleProducts;
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col">

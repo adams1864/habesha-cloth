@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Button } from "@mantine/core";
 import { useRouter } from "@/i18n/routing";
-import { StarRating } from "./StarRating";
+// StarRating and review display removed per request
 import { SizeSelector } from "./SizeSelector";
 import TelegramButton from "@/components/telegram/TelegramButton";
 import { ColorSelector } from "./ColorSelector";
@@ -46,25 +46,22 @@ export function ProductInfo({ product }: ProductInfoProps) {
     <>
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+          <h1 className="text-3xl font-light tracking-wide text-[#6d6d6d]">
+            {product.name}
+          </h1>
           {product.itemNumber && (
-            <p className="text-sm text-gray-500">Item #{product.itemNumber}</p>
+            <p className="mt-1 text-sm font-light text-[#9b9b9b]">
+              Item #{product.itemNumber}
+            </p>
           )}
         </div>
 
-        {product.rating && (
-          <div className="flex items-center gap-2">
-            <StarRating rating={product.rating} />
-            {product.reviewCount && (
-              <p className="text-sm text-gray-500">
-                ({product.reviewCount} reviews)
-              </p>
-            )}
-          </div>
-        )}
+        {/* ratings and reviews removed */}
 
         {product.description && (
-          <p className="text-gray-600">{product.description}</p>
+          <p className="text-base font-light text-[#9b9b9b]">
+            {product.description}
+          </p>
         )}
 
         {sizes.length > 0 && <SizeSelector sizes={sizes} />}
@@ -72,7 +69,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
         {product.colors.length > 0 && <ColorSelector colors={product.colors} />}
 
         <div className="flex flex-col gap-4">
-          <span className="text-3xl font-bold text-[#d6001c]">
+          <span className="text-3xl font-light text-[#d6001c] tracking-wide">
             {formattedPrice}
           </span>
           <div className="flex gap-3 items-center">

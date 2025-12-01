@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="56" viewBox="0 0 200 56" fill="none">
+  <rect width="200" height="56" fill="transparent"/>
+  <g transform="translate(0,0)" fill="#111827">
+    <!-- simple emblem on top -->
+    <g transform="translate(72,2)">
+      <rect x="0" y="0" width="8" height="20" rx="2" fill="#111827"/>
+      <rect x="12" y="0" width="8" height="20" rx="2" fill="#111827"/>
+      <rect x="24" y="0" width="8" height="20" rx="2" fill="#111827"/>
+    </g>
+    <!-- brand text to the right (we will mostly show the emblem in header) -->
+  </g>
+</svg>

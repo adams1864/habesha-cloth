@@ -17,7 +17,7 @@ export function ProductImageGallery({
 
   return (
     <div className="grid grid-cols-2 gap-4">
-      <div className="col-span-2 row-span-2 relative h-[400px] rounded-xl bg-gray-50 overflow-hidden">
+      <div className="col-span-2 row-span-2 relative h-[480px] bg-gray-50 overflow-hidden">
         <Image
           src={images[selectedImage]}
           alt={`${productName} - View ${selectedImage + 1}`}
@@ -32,7 +32,7 @@ export function ProductImageGallery({
           <UnstyledButton
             key={`thumbnail-${imageIndex}`}
             onClick={() => setSelectedImage(imageIndex)}
-            className={`relative h-[192px] rounded-xl bg-gray-50 overflow-hidden transition-all ${
+            className={`relative h-[220px] bg-gray-50 overflow-hidden transition-all ${
               selectedImage === imageIndex
                 ? "ring-2 ring-[#d6001c] ring-offset-2"
                 : "hover:opacity-80"
