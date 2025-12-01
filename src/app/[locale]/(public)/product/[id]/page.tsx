@@ -23,7 +23,7 @@ export default async function ProductDetailPage(props: {
         ...p,
         images: p.images ?? (p.image ? [p.image] : []),
         coverImage: p.image ?? null,
-        size: p.sizes ? p.sizes.join(", ") : p.size ?? "",
+        size: p.sizes ? p.sizes.join(", ") : p.sizes ?? "",
         colors: p.colors ?? [],
       } as any;
     }
