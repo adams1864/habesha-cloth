@@ -1,6 +1,6 @@
 import React from "react";
 import { products } from "@/data/products";
-import { ProductGrid } from "@components/landing/ProductGrid";
+import { ProductGrid } from "@/components/landing/ProductGrid";
 import type { Product } from "@/lib/api";
 
 interface PageProps {
