@@ -18,13 +18,28 @@ export default async function ProductDetailPage(props: {
   if (!product) {
     const p = sampleProducts.find((s) => String(s.id) === String(id));
     if (p) {
-      // adapt sample product shape if necessary
+      // adapt sample product shape to match API Product type
       product = {
-        ...p,
+        id: p.id,
+        name: p.name,
+        description: p.description ?? "",
+        category: (p as any).category ?? "",
+        size: p.sizes ? p.sizes.join(", ") : "",
+        gender: (p as any).gender ?? "",
+        price: p.price ?? 0,
+        stock: (p as any).stock ?? 0,
+        status: "published",
+        coverImage: p.image ?? "",
+        image1: null,
+        image2: null,
         images: p.images ?? (p.image ? [p.image] : []),
-        coverImage: p.image ?? null,
-        size: p.sizes ? p.sizes.join(", ") : p.sizes ?? "",
+        color: "",
+        colorValues: [],
         colors: p.colors ?? [],
+        createdAt: null,
+        itemNumber: (p as any).itemNumber ?? null,
+        rating: null,
+        reviewCount: null,
       } as any;
     }
   }
