@@ -31,9 +31,10 @@ function mapBundleToForm(bundle: Awaited<ReturnType<typeof getBundle>>):
 export default async function BundleDetailPage({
   params,
 }: {
-  params: { locale: string; id: string };
+  params: { locale: string; id: string } | Promise<{ locale: string; id: string }>;
 }) {
-  const bundle = await getBundle(params.id).catch(() => null);
+  const { id } = await params;
+  const bundle = await getBundle(id).catch(() => null);
   if (!bundle) {
     notFound();
   }

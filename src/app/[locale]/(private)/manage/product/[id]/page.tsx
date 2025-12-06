@@ -38,9 +38,10 @@ function mapProductToForm(product: Awaited<ReturnType<typeof getProduct>>): Prod
 export default async function ProductDetailPage({
   params,
 }: {
-  params: { locale: string; id: string };
+  params: { locale: string; id: string } | Promise<{ locale: string; id: string }>;
 }) {
-  const product = await getProduct(params.id).catch(() => null);
+  const { id } = await params;
+  const product = await getProduct(id).catch(() => null);
   if (!product) {
     notFound();
   }

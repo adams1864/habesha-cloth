@@ -44,7 +44,13 @@ export default async function BundlePage({ params }: Props) {
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-20 h-20 relative rounded-md overflow-hidden bg-gray-50">
-                      <Image src={p.coverImage} alt={p.name} fill className="object-cover" />
+                      <Image
+                        src={p.coverImage}
+                        alt={p.name}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover"
+                      />
                     </div>
                     <div>
                       <div className="font-medium">{p.name}</div>

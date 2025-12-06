@@ -22,6 +22,8 @@ export function ProductImageGallery({
           src={images[selectedImage]}
           alt={`${productName} - View ${selectedImage + 1}`}
           fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 50vw"
+          loading="eager"
           className="object-cover"
           priority
         />
@@ -43,6 +45,7 @@ export function ProductImageGallery({
               src={image}
               alt={`${productName} - Thumbnail ${imageIndex + 1}`}
               fill
+              sizes="(max-width: 640px) 50vw, 25vw"
               className="object-cover"
             />
           </UnstyledButton>

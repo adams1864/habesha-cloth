@@ -157,6 +157,7 @@ export function BundleModal({ currentProduct, onClose }: BundleModalProps) {
                         src={productImage}
                         alt={product.name}
                         fill
+                        sizes="(max-width: 640px) 100vw, 50vw"
                         className="object-cover"
                       />
                     </div>
@@ -188,7 +189,8 @@ export function BundleModal({ currentProduct, onClose }: BundleModalProps) {
                         src={productImage}
                         alt={product.name}
                         fill
-                        className="object-cover"
+                          sizes="(max-width: 640px) 100vw, 50vw"
+                          className="object-cover"
                       />
                     </div>
                     <div className="flex-1">

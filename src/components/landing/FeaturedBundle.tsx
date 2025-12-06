@@ -105,7 +105,7 @@ export function FeaturedBundle() {
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          {galleryItems.map((item) => (
+          {galleryItems.map((item, i) => (
             <div
               key={item.id}
               className="group relative aspect-square overflow-hidden rounded-lg"
@@ -115,6 +115,8 @@ export function FeaturedBundle() {
                   src={item.image || fallbackImage}
                   alt={item.label}
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  loading={i === 0 ? "eager" : undefined}
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>

@@ -1,5 +1,4 @@
-import dynamic from "next/dynamic";
-const Header = dynamic(() => import("@/components/landing/Header"), { ssr: false });
+import { Header } from "@/components/landing/Header";
 import { FilterBar } from "@/components/landing/FilterBar";
 import { FeaturedBundle } from "@/components/landing/FeaturedBundle";
 import { ProductGrid } from "@/components/landing/ProductGrid";
