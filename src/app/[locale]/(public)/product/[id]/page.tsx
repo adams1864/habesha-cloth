@@ -8,9 +8,10 @@ import { ProductInfo } from "./_components/ProductInfo";
 // Reviews/ratings removed per request
 
 export default async function ProductDetailPage(props: {
-  params: { id: string };
+  params: { id: string } | Promise<{ id: string }>;
 }) {
-  const { id } = props.params;
+  const resolved = await props.params;
+  const { id } = resolved;
 
   // Try fetching product from API, fallback to local sample products for preview
   let product = await getProduct(id).catch(() => null);
